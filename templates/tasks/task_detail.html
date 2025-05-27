@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="mb-0 {% if task.completed %}text-decoration-line-through text-muted{% endif %}">
+                    {{ task.title }}
+                </h2>
+                <span class="badge 
+                    {% if task.priority == 'high' %}bg-danger
+                    {% elif task.priority == 'medium' %}bg-warning
+                    {% else %}bg-info{% endif %}">
+                    {{ task.get_priority_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                {% if task.description %}
+                    <p class="card-text">{{ task.description|linebreaks }}</p>
+                {% else %}
+                    <p class="text-muted fst-italic">Sem descrição</p>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-sm-6">
+                        <strong>Status:</strong>
+                        {% if task.completed %}
+                            <span class="badge bg-success"><i class="fas fa-check"></i> Concluída</span>
+                        {% else %}
+                            <span class="badge bg-warning"><i class="fas fa-clock"></i> Pendente</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-6">
+                        <strong>Prioridade:</strong> {{ task.get_priority_display }}
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-sm-6">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-plus"></i> Criada: {{ task.created_at|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-edit"></i> Atualizada: {{ task.updated_at|date:"d/m/Y H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cog"></i> Ações</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'toggle_task' task.pk %}" class="btn btn-{% if task.completed %}warning{% else %}success{% endif %}">
+                        <i class="fas fa-{% if task.completed %}undo{% else %}check{% endif %}"></i>
+                        {% if task.completed %}Reabrir Tarefa{% else %}Marcar como Concluída{% endif %}
+                    </a>
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar Tarefa
+                    </a>
+                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Excluir Tarefa
+                    </a>
+                    <a href="{% url 'task_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar à Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

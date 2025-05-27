@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Tarefas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-list"></i> Minhas Tarefas</h1>
+    <span class="badge bg-secondary">{{ tasks.count }} tarefa{{ tasks.count|pluralize }}</span>
+</div>
+
+{% if tasks %}
+    <div class="row">
+        {% for task in tasks %}
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card {% if task.completed %}border-success{% elif task.priority == 'high' %}border-danger{% elif task.priority == 'medium' %}border-warning{% else %}border-info{% endif %}">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="badge 
+                        {% if task.priority == 'high' %}bg-danger
+                        {% elif task.priority == 'medium' %}bg-warning
+                        {% else %}bg-info{% endif %}">
+                        {{ task.get_priority_display }}
+                    </span>
+                    {% if task.completed %}
+                        <span class="badge bg-success"><i class="fas fa-check"></i> Concluída</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title {% if task.completed %}text-decoration-line-through text-muted{% endif %}">
+                        {{ task.title }}
+                    </h5>
+                    {% if task.description %}
+                        <p class="card-text text-muted">{{ task.description|truncatewords:10 }}</p>
+                    {% endif %}
+                    <small class="text-muted">
+                        <i class="fas fa-calendar"></i> {{ task.created_at|date:"d/m/Y H:i" }}
+                    </small>
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100">
+                        <a href="{% url 'task_detail' task.pk %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+                        <a href="{% url 'toggle_task' task.pk %}" class="btn btn-outline-{% if task.completed %}warning{% else %}success{% endif %} btn-sm">
+                            <i class="fas fa-{% if task.completed %}undo{% else %}check{% endif %}"></i>
+                            {% if task.completed %}Reabrir{% else %}Concluir{% endif %}
+                        </a>
+                        <a href="{% url 'task_update' task.pk %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center mt-5">
+        <i class="fas fa-clipboard-list fa-5x text-muted mb-3"></i>
+        <h3 class="text-muted">Nenhuma tarefa encontrada</h3>
+        <p class="text-muted">Que tal criar sua primeira tarefa?</p>
+        <a href="{% url 'task_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Criar Primeira Tarefa
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
